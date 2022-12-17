@@ -1,15 +1,16 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
-import cwLogo from "../assets/cw.jpeg";
-import { useAuth } from "../context/AuthContextProvider";
-import { Link, useHistory } from "react-router-dom";
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,48 +21,18 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
-    display: "none",
-    fontFamily: "Girassol",
-    [theme.breakpoints.up("sm")]: {
-      display: "block",
-    },
-    "& span": {
-      fontSize: 30,
-      color: "wheat",
-    },
-  },
-  appBar: {
-    backgroundColor: "#046582",
-  },
-  logo: {
-    width: 40,
-  },
-  linkStyle: {
-    textDecoration: "none",
-    color: "black",
-  },
-
-  login: {
-    padding: 10,
-    fontSize: 20,
-    color: "white",
-    textDecoration: "none",
   },
 }));
 
 export default function Navbar() {
   const classes = useStyles();
+  const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  let { currentUser, logout } = useAuth();
-  const history = useHistory();
 
-  //!Just for testing purpose
-  // currentUser = {
-  //   email: "a@gmailcom",
-  // };
-
-  console.log(currentUser);
+  const handleChange = (event) => {
+    setAuth(event.target.checked);
+  };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -71,97 +42,53 @@ export default function Navbar() {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    setAnchorEl(null);
-    logout();
-  };
-  const handleDashboard = () => {
-    setAnchorEl(null);
-    history.push("/");
-  };
-
   return (
     <div className={classes.root}>
-      <AppBar position="static" className={classes.appBar}>
+      <FormGroup>
+        <FormControlLabel
+          control={<Switch checked={auth} onChange={handleChange} aria-label="login switch" />}
+          label={auth ? 'Logout' : 'Login'}
+        />
+      </FormGroup>
+      <AppBar position="static">
         <Toolbar>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
-            onClick={handleDashboard}
-          >
-            <img src={cwLogo} alt="logo" className={classes.logo} />
+          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+            <MenuIcon />
           </IconButton>
-          <div className={classes.root}>
-            <Link to="/" className={classes.login}>
-              <Typography variant="h6" className={classes.title}>
-                ──── <span>{"<Clarusway IT />"}</span> BLOG ────
-              </Typography>
-            </Link>
-          </div>
-
-          <div>
-            <IconButton
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleMenu}
-              color="inherit"
-            >
-              <AccountCircle style={{ fontSize: "40px" }} />
-            </IconButton>
-            {currentUser?.email ? (
+          <Typography variant="h6" className={classes.title}>
+            Photos
+          </Typography>
+          {auth && (
+            <div>
+              <IconButton
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}
                 anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
+                  vertical: 'top',
+                  horizontal: 'right',
                 }}
                 keepMounted
                 transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
+                  vertical: 'top',
+                  horizontal: 'right',
                 }}
                 open={open}
                 onClose={handleClose}
               >
-                <Link to="/profile" className={classes.linkStyle}>
-                  <MenuItem onClick={handleClose}>Profile</MenuItem>
-                </Link>
-                <Link to="/new-blog" className={classes.linkStyle}>
-                  <MenuItem onClick={handleClose}>New Blog</MenuItem>
-                </Link>
-                <Link to="/login" className={classes.linkStyle}>
-                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                </Link>
+                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={handleClose}>My account</MenuItem>
               </Menu>
-            ) : (
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={open}
-                onClose={handleClose}
-              >
-                <Link to="/login" className={classes.linkStyle}>
-                  <MenuItem onClick={handleClose}>Login</MenuItem>
-                </Link>
-                <Link to="/register" className={classes.linkStyle}>
-                  <MenuItem onClick={handleClose}>Register</MenuItem>
-                </Link>
-              </Menu>
-            )}
-          </div>
+            </div>
+          )}
         </Toolbar>
       </AppBar>
     </div>
